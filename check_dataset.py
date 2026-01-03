@@ -42,8 +42,17 @@ class YoloValidator:
                 self._errors += 1
                 return False
 
+            for class_id, class_name in self.classes_info.items():
+                expected = f"Class {class_id}"
+                if class_name != expected:
+                    print(
+                        "❌ Error: class name mismatch in data.yaml. "
+                        f"Expected '{expected}' but found '{class_name}'."
+                    )
+                    self._errors += 1
+
             print("✅ 'data.yaml' loaded successfully.")
-            return True
+            return self._errors == 0
         except Exception as exc:  # noqa: BLE001 - Provide user-friendly output
             print(f"❌ Error reading YAML: {exc}")
             self._errors += 1
@@ -138,13 +147,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "dataset",
         type=Path,
-        help="Path to the dataset containing data.yaml and train/valid/test folders.",
+        help="Path to the dataset containing data.yaml and train/val/test folders.",
     )
     parser.add_argument(
         "--splits",
         nargs="*",
-        default=["train", "valid", "test"],
-        help="Splits to validate (default: train valid test).",
+        default=["train", "val", "test"],
+        help="Splits to validate (default: train val test).",
     )
     return parser.parse_args()
 

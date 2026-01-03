@@ -126,7 +126,7 @@ class YoloUniversalMerger:
 
         data_splits = {
             "train": self.all_samples[:idx1],
-            "valid": self.all_samples[idx1:idx2],
+            "val": self.all_samples[idx1:idx2],
             "test": self.all_samples[idx2:],
         }
 
@@ -166,11 +166,11 @@ class YoloUniversalMerger:
 
     def create_yaml(self) -> None:
         print("\n📝 4. Creating final data.yaml...")
-        final_names = {v: k for k, v in self.global_class_map.items()}
+        final_names = [f"Class {idx}" for idx in range(len(self.global_class_map))]
         yaml_content = {
             "path": str(self.output.absolute()),
             "train": "train/images",
-            "val": "valid/images",
+            "val": "val/images",
             "test": "test/images",
             "nc": len(final_names),
             "names": final_names,
@@ -314,7 +314,7 @@ def parse_args() -> argparse.Namespace:
         "--ratio",
         type=parse_ratio,
         default=(0.8, 0.1, 0.1),
-        help="Split ratio train,valid,test (e.g. 0.8,0.1,0.1).",
+        help="Split ratio train,val,test (e.g. 0.8,0.1,0.1).",
     )
     parser.add_argument("--seed", type=int, default=None, help="Seed for reproducible shuffle.")
     parser.add_argument(
