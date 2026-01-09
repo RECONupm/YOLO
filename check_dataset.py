@@ -42,15 +42,20 @@ class YoloValidator:
                 self._errors += 1
                 return False
 
-            for class_id, class_name in self.classes_info.items():
-                expected = f"Class {class_id}"
-                if class_name != expected:
-                    print(
-                        "❌ Error: class name mismatch in data.yaml. "
-                        f"Expected '{expected}' but found '{class_name}'."
-                    )
-                    self._errors += 1
+            # Accept any real class names (e.g., 'bird-drop', 'solar-panel').
+            # Validate that class IDs are contiguous starting at 0 and that names are non-empty strings.
+            class_ids = sorted(self.classes_info.keys())
+            if class_ids and class_ids != list(range(len(class_ids))):
+                print(
+                    "❌ Error: class IDs in data.yaml are not contiguous starting at 0. "
+                    f"Found {class_ids} but expected {list(range(len(class_ids)))}."
+                )
+                self._errors += 1
 
+            for class_id, class_name in self.classes_info.items():
+                if not isinstance(class_name, str) or not class_name.strip():
+                    print(f"❌ Error: invalid class name for id {class_id!r} in data.yaml: {class_name!r}")
+                    self._errors += 1
             print("✅ 'data.yaml' loaded successfully.")
             return self._errors == 0
         except Exception as exc:  # noqa: BLE001 - Provide user-friendly output
